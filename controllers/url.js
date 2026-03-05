@@ -1,14 +1,15 @@
 const URL = require('../models/url');
 const bcrypt = require("bcrypt");
 async function handleGenerateNewShortUrl(req, res) {
-    const body = req.body;
-    if (!body.url) return res.status(400).json({ error: "url is required" });
+    const {url} = req.body;
+    if (url) return res.status(400).json({ error: "url is required" });
 
     // Generate a short id without external dependency
     const shortID = Math.random().toString(36).slice(2, 8);
     await URL.create({
         shortId: shortID,
         redirectURL: body.url,
+        userId: req.session.userId,
         visitHistory: [],
     });
 
@@ -63,9 +64,36 @@ async function handleUserLogin(req, res) {
 
 }
 
+async function handleGetUserUrls(req, res) {
+    try {
+        const userId = req.session.userId;
+        const urls = await URL.find({ userId }).sort({ createdAt: -1 });
+        return res.json(urls);
+    } catch (error) {
+        return res.status(500).json({ error: 'Failed to fetch URLs' });
+    }
+}
+
+async function handleDeleteUrl(req, res) {
+    try {
+        const shortId = req.params.shortId;
+        const userId = req.session.userId;
+        
+        const url = await URL.findOne({ shortId, userId });
+        if (!url) return res.status(404).json({ error: 'URL not found' });
+        
+        await URL.deleteOne({ shortId, userId });
+        return res.json({ message: 'URL deleted successfully' });
+    } catch (error) {
+        return res.status(500).json({ error: 'Failed to delete URL' });
+    }
+}
+
 module.exports = {
     handleGenerateNewShortURL: handleGenerateNewShortUrl,
     handleGetAnalytics,
     handleRedirect,
-    handleUserLogin
+    handleUserLogin,
+    handleGetUserUrls,
+    handleDeleteUrl
 }

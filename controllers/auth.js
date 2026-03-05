@@ -36,7 +36,8 @@ async function handleUserLogin(req, res){
         return res.send("Invalid password");
     }
 
-    res.send("user logged in successfully");
+    req.session.userId = user._id;
+    return res.redirect("/dashboard");
 }
 
 module.exports = {

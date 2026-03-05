@@ -10,6 +10,10 @@ const userSchema = mongoose.Schema({
         type :String,
         required : true,
     },
+    userId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+    },
     visitHistory : [{timestamp : {type : Number}}],
 },
 { timestamps : true }

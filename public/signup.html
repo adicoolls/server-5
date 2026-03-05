@@ -1,13 +1,458 @@
-<h2>Signup</h2>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Sign Up - URL Shortener</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-<form action="/signup" method="POST">
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
 
-<input type="email" name="email" placeholder="Enter Email" required />
-<br><br>
+        .container {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            padding: 50px 40px;
+            max-width: 450px;
+            width: 100%;
+            animation: slideIn 0.5s ease-out;
+        }
 
-<input type="password" name="password" placeholder="Enter Password" required />
-<br><br>
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
 
-<button type="submit">Signup</button>
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
 
-</form>
+        .logo {
+            font-size: 40px;
+            margin-bottom: 10px;
+        }
+
+        h1 {
+            color: #333;
+            font-size: 28px;
+            margin-bottom: 5px;
+        }
+
+        .subtitle {
+            color: #999;
+            font-size: 14px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        input[type="email"],
+        input[type="password"] {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+            transition: all 0.3s;
+            background-color: #f8f9fa;
+        }
+
+        input[type="email"]:focus,
+        input[type="password"]:focus {
+            outline: none;
+            border-color: #667eea;
+            background-color: white;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        input[type="email"]::placeholder,
+        input[type="password"]::placeholder {
+            color: #bbb;
+        }
+
+        input[type="email"]:invalid:not(:placeholder-shown),
+        input[type="password"]:invalid:not(:placeholder-shown) {
+            border-color: #e74c3c;
+        }
+
+        .password-requirements {
+            background: #f8f9fa;
+            padding: 12px;
+            border-radius: 5px;
+            margin-top: 8px;
+            font-size: 13px;
+            color: #666;
+        }
+
+        .requirement {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+            transition: color 0.3s;
+        }
+
+        .requirement:last-child {
+            margin-bottom: 0;
+        }
+
+        .requirement.met {
+            color: #27ae60;
+        }
+
+        .requirement-check {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #ddd;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 8px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .requirement.met .requirement-check {
+            background: #27ae60;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+
+        .submit-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .submit-btn:active:not(:disabled) {
+            transform: translateY(0);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .links {
+            text-align: center;
+            margin-top: 25px;
+            padding-top: 25px;
+            border-top: 1px solid #eee;
+        }
+
+        .links p {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .login-link {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s;
+        }
+
+        .login-link:hover {
+            color: #764ba2;
+        }
+
+        .error-message {
+            color: #e74c3c;
+            background-color: #ffe6e6;
+            padding: 12px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            border-left: 4px solid #e74c3c;
+            display: none;
+            animation: shake 0.3s ease-in-out;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        .success-message {
+            color: #27ae60;
+            background-color: #e6ffe6;
+            padding: 12px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            border-left: 4px solid #27ae60;
+            display: none;
+        }
+
+        .success-message.show {
+            display: block;
+        }
+
+        .password-toggle {
+            position: relative;
+        }
+
+        .password-toggle input {
+            padding-right: 40px;
+        }
+
+        .toggle-btn {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #999;
+            font-size: 18px;
+            transition: color 0.3s;
+            padding: 5px;
+        }
+
+        .toggle-btn:hover {
+            color: #667eea;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 10px;
+            color: #667eea;
+            font-size: 14px;
+        }
+
+        .loading.show {
+            display: block;
+        }
+
+        .loading::after {
+            content: '';
+            display: inline-block;
+            width: 15px;
+            height: 15px;
+            margin-left: 8px;
+            border: 2px solid #667eea;
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+            vertical-align: middle;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .terms {
+            font-size: 12px;
+            color: #999;
+            margin-top: 15px;
+            text-align: center;
+        }
+
+        .terms a {
+            color: #667eea;
+            text-decoration: none;
+        }
+
+        .terms a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">🔗</div>
+            <h1>Create Account</h1>
+            <p class="subtitle">Join us to shorten your URLs</p>
+        </div>
+
+        <div class="error-message" id="errorMessage"></div>
+        <div class="success-message" id="successMessage"></div>
+        <div class="loading" id="loading">Creating account</div>
+
+        <form id="signupForm" action="/signup" method="POST">
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <input 
+                    type="email" 
+                    id="email"
+                    name="email" 
+                    placeholder="Enter your email"
+                    required
+                    autocomplete="email"
+                />
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <div class="password-toggle">
+                    <input 
+                        type="password" 
+                        id="password"
+                        name="password" 
+                        placeholder="Create a strong password"
+                        required
+                        autocomplete="new-password"
+                    />
+                    <button type="button" class="toggle-btn" onclick="togglePassword('password')">👁️</button>
+                </div>
+                <div class="password-requirements">
+                    <div class="requirement" id="req-length">
+                        <span class="requirement-check">✓</span>
+                        <span>At least 6 characters</span>
+                    </div>
+                    <div class="requirement" id="req-number">
+                        <span class="requirement-check">✓</span>
+                        <span>Contains a number</span>
+                    </div>
+                    <div class="requirement" id="req-upper">
+                        <span class="requirement-check">✓</span>
+                        <span>Contains an uppercase letter</span>
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit" class="submit-btn" id="submitBtn">Create Account</button>
+
+            <p class="terms">
+                By signing up, you agree to our <a href="#">Terms of Service</a>
+            </p>
+        </form>
+
+        <div class="links">
+            <p>Already have an account?</p>
+            <a href="/login" class="login-link">🔑 Login here</a>
+        </div>
+    </div>
+
+    <script>
+        const passwordInput = document.getElementById('password');
+        const submitBtn = document.getElementById('submitBtn');
+        const errorMsg = document.getElementById('errorMessage');
+        const successMsg = document.getElementById('successMessage');
+        const loading = document.getElementById('loading');
+
+        function togglePassword(fieldId) {
+            const input = document.getElementById(fieldId);
+            const type = input.type === 'password' ? 'text' : 'password';
+            input.type = type;
+        }
+
+        function checkPasswordRequirements() {
+            const password = passwordInput.value;
+            
+            const requirements = {
+                length: password.length >= 6,
+                number: /\d/.test(password),
+                upper: /[A-Z]/.test(password)
+            };
+
+            document.getElementById('req-length').classList.toggle('met', requirements.length);
+            document.getElementById('req-number').classList.toggle('met', requirements.number);
+            document.getElementById('req-upper').classList.toggle('met', requirements.upper);
+
+            const allMet = Object.values(requirements).every(val => val === true);
+            submitBtn.disabled = !allMet;
+
+            return allMet;
+        }
+
+        passwordInput.addEventListener('input', checkPasswordRequirements);
+
+        // Initialize
+        checkPasswordRequirements();
+
+        document.getElementById('signupForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            if (!checkPasswordRequirements()) {
+                errorMsg.textContent = '✗ Please meet all password requirements';
+                errorMsg.classList.add('show');
+                return;
+            }
+
+            errorMsg.classList.remove('show');
+            successMsg.classList.remove('show');
+            loading.classList.add('show');
+
+            try {
+                const response = await fetch('/signup', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: `email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`,
+                });
+
+                const text = await response.text();
+
+                if (response.ok && text.includes('successfully')) {
+                    successMsg.textContent = '✓ Account created successfully! Redirecting...';
+                    successMsg.classList.add('show');
+                    setTimeout(() => {
+                        window.location.href = '/login';
+                    }, 1500);
+                } else if (text.includes('already exists')) {
+                    throw new Error('Email already registered. Please login or use a different email.');
+                } else {
+                    throw new Error(text || 'Signup failed. Please try again.');
+                }
+            } catch (error) {
+                errorMsg.textContent = '✗ ' + error.message;
+                errorMsg.classList.add('show');
+            } finally {
+                loading.classList.remove('show');
+            }
+        });
+    </script>
+</body>
+</html>

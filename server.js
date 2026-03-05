@@ -33,15 +33,26 @@ app.use((req, res, next) => {
 
 
 
-app.get("/create-url", checkAuth, (req, res) => {
-    res.send("you are allowed ");
+app.get("/dashboard", checkAuth, (req, res) => {
+    res.sendFile(path.join(__dirname, "public", "dashboard.html"));
 });
+
 app.get("/login", (req, res) =>{
     res.sendFile(path.join(__dirname, "public", "login.html"));
 });
+
 app.get("/signup", (req, res) =>{
     res.sendFile(path.join(__dirname, "public", "signup.html"));
-})
+});
+
+app.get("/logout", (req, res) => {
+    req.session.destroy((err) => {
+        if (err) {
+            return res.send("Error logging out");
+        }
+        res.redirect("/login");
+    });
+});
 
 // database connection
 connectToMongoDB("mongodb://localhost:27017/short-url")
@@ -51,7 +62,7 @@ connectToMongoDB("mongodb://localhost:27017/short-url")
 // routes
 
 
-app.use("/url", urlRoute);
+app.use("/url", checkAuth, urlRoute);
 // test route (SSR-like HTML rendering)
 
 // start server

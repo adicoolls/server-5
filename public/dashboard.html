@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>URL Shortener - Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            color: #333;
+            font-size: 28px;
+        }
+
+        .logout-btn {
+            background-color: #e74c3c;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s;
+        }
+
+        .logout-btn:hover {
+            background-color: #c0392b;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 600;
+        }
+
+        input[type="url"],
+        input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        input[type="url"]:focus,
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 25px;
+        }
+
+        button[type="submit"] {
+            flex: 1;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        button[type="submit"]:hover {
+            transform: translateY(-2px);
+        }
+
+        button[type="submit"]:active {
+            transform: translateY(0);
+        }
+
+        .results {
+            margin-top: 30px;
+            display: none;
+        }
+
+        .results.show {
+            display: block;
+        }
+
+        .result-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            border-left: 4px solid #667eea;
+        }
+
+        .result-label {
+            font-size: 12px;
+            color: #999;
+            text-transform: uppercase;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .result-value {
+            font-size: 16px;
+            color: #333;
+            word-break: break-all;
+            margin-bottom: 10px;
+            background: white;
+            padding: 8px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .copy-btn {
+            background-color: #3498db;
+            color: white;
+            padding: 8px 15px;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: background-color 0.3s;
+        }
+
+        .copy-btn:hover {
+            background-color: #2980b9;
+        }
+
+        .copy-btn.copied {
+            background-color: #27ae60;
+        }
+
+        .url-list {
+            margin-top: 30px;
+            border-top: 2px solid #eee;
+            padding-top: 30px;
+        }
+
+        .url-list h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 20px;
+        }
+
+        .url-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .url-info {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .short-id {
+            color: #667eea;
+            font-weight: 600;
+            font-family: 'Courier New', monospace;
+            margin-bottom: 5px;
+        }
+
+        .original-url {
+            color: #666;
+            font-size: 13px;
+            word-break: break-all;
+        }
+
+        .url-meta {
+            color: #999;
+            font-size: 11px;
+            margin-top: 5px;
+        }
+
+        .url-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+
+        .analytics-btn {
+            background-color: #16a085;
+            color: white;
+            padding: 8px 12px;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: background-color 0.3s;
+        }
+
+        .analytics-btn:hover {
+            background-color: #117a65;
+        }
+
+        .delete-btn {
+            background-color: #e74c3c;
+            color: white;
+            padding: 8px 12px;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: background-color 0.3s;
+        }
+
+        .delete-btn:hover {
+            background-color: #c0392b;
+        }
+
+        .error-message {
+            color: #e74c3c;
+            font-size: 14px;
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #ffe6e6;
+            border-radius: 5px;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        .success-message {
+            color: #27ae60;
+            font-size: 14px;
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #e6ffe6;
+            border-radius: 5px;
+            display: none;
+        }
+
+        .success-message.show {
+            display: block;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 10px;
+            color: #667eea;
+        }
+
+        .loading.show {
+            display: block;
+        }
+
+        .empty-list {
+            color: #999;
+            text-align: center;
+            padding: 30px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔗 URL Shortener</h1>
+            <button class="logout-btn" onclick="logout()">Logout</button>
+        </div>
+
+        <form id="shortenForm">
+            <div class="form-group">
+                <label for="url">Enter Long URL:</label>
+                <input 
+                    type="url" 
+                    id="url" 
+                    name="url" 
+                    placeholder="https://example.com/very/long/url" 
+                    required
+                />
+            </div>
+
+            <div class="loading" id="loading">Creating short URL...</div>
+            <div class="error-message" id="errorMessage"></div>
+            <div class="success-message" id="successMessage"></div>
+
+            <div class="button-group">
+                <button type="submit">Shorten URL</button>
+            </div>
+        </form>
+
+        <div class="results" id="results">
+            <div class="result-item">
+                <div class="result-label">Short ID</div>
+                <div class="result-value" id="shortId"></div>
+                <div class="url-actions">
+                    <button class="copy-btn" onclick="copyShortId()">Copy Short ID</button>
+                    <button class="copy-btn" onclick="copyFullUrl()">Copy Full Short URL</button>
+                </div>
+            </div>
+
+            <div class="result-item">
+                <div class="result-label">Original URL</div>
+                <div class="result-value" id="originalUrl"></div>
+                <button class="copy-btn" onclick="copyOriginalUrl()">Copy Original URL</button>
+            </div>
+        </div>
+
+        <div class="url-list" id="urlListContainer" style="display: none;">
+            <h2>Your Shortened URLs</h2>
+            <div id="urlList" class="empty-list">Loading...</div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = '/url';
+
+        document.getElementById('shortenForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const url = document.getElementById('url').value;
+            const loading = document.getElementById('loading');
+            const errorMsg = document.getElementById('errorMessage');
+            const successMsg = document.getElementById('successMessage');
+
+            loading.classList.add('show');
+            errorMsg.classList.remove('show');
+            successMsg.classList.remove('show');
+
+            try {
+                const response = await fetch(`${API_BASE}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ url }),
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    document.getElementById('shortId').textContent = data.id;
+                    document.getElementById('originalUrl').textContent = url;
+                    document.getElementById('results').classList.add('show');
+                    
+                    successMsg.textContent = '✓ URL shortened successfully!';
+                    successMsg.classList.add('show');
+
+                    document.getElementById('url').value = '';
+                    setTimeout(() => {
+                        loadUserUrls();
+                    }, 500);
+                } else {
+                    throw new Error(data.error || 'Failed to shorten URL');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                errorMsg.textContent = '✗ ' + error.message;
+                errorMsg.classList.add('show');
+            } finally {
+                loading.classList.remove('show');
+            }
+        });
+
+        function copyShortId() {
+            const shortId = document.getElementById('shortId').textContent;
+            navigator.clipboard.writeText(shortId).then(() => {
+                showCopyFeedback(event.target);
+            });
+        }
+
+        function copyFullUrl() {
+            const shortId = document.getElementById('shortId').textContent;
+            const fullUrl = `${API_BASE}/${shortId}`;
+            navigator.clipboard.writeText(fullUrl).then(() => {
+                showCopyFeedback(event.target);
+            });
+        }
+
+        function copyOriginalUrl() {
+            const url = document.getElementById('originalUrl').textContent;
+            navigator.clipboard.writeText(url).then(() => {
+                showCopyFeedback(event.target);
+            });
+        }
+
+        function showCopyFeedback(button) {
+            const originalText = button.textContent;
+            button.textContent = 'Copied!';
+            button.classList.add('copied');
+            setTimeout(() => {
+                button.textContent = originalText;
+                button.classList.remove('copied');
+            }, 2000);
+        }
+
+        async function loadUserUrls() {
+            try {
+                const urlListContainer = document.getElementById('urlListContainer');
+                const urlList = document.getElementById('urlList');
+                
+                const response = await fetch(`${API_BASE}/user/urls`, {
+                    method: 'GET',
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to load URLs');
+                }
+
+                const urls = await response.json();
+
+                if (urls.length === 0) {
+                    urlList.innerHTML = '<div class="empty-list">No URLs shortened yet. Create one above!</div>';
+                    urlListContainer.style.display = 'block';
+                    return;
+                }
+
+                let html = '';
+                urls.forEach(url => {
+                    const createdDate = new Date(url.createdAt).toLocaleDateString();
+                    const createdTime = new Date(url.createdAt).toLocaleTimeString();
+                    
+                    html += `
+                        <div class="url-item">
+                            <div class="url-info">
+                                <div class="short-id">🔗 ${url.shortId}</div>
+                                <div class="original-url" title="${url.redirectURL}">${url.redirectURL}</div>
+                                <div class="url-meta">Created: ${createdDate} at ${createdTime} | Clicks: ${url.visitHistory.length}</div>
+                            </div>
+                            <div class="url-actions">
+                                <button class="copy-btn" onclick="copyUrlLink('${url.shortId}')">Copy Link</button>
+                                <button class="analytics-btn" onclick="viewAnalytics('${url.shortId}')">📊 Analytics</button>
+                                <button class="delete-btn" onclick="deleteUrl('${url.shortId}')">🗑️ Delete</button>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                urlList.innerHTML = html;
+                urlListContainer.style.display = 'block';
+            } catch (error) {
+                console.error('Error loading URLs:', error);
+                document.getElementById('urlList').innerHTML = '<div class="empty-list">Error loading URLs. Please try again.</div>';
+            }
+        }
+
+        function copyUrlLink(shortId) {
+            const link = `${API_BASE}/${shortId}`;
+            navigator.clipboard.writeText(link).then(() => {
+                const btn = event.target;
+                const originalText = btn.textContent;
+                btn.textContent = 'Copied!';
+                btn.classList.add('copied');
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                    btn.classList.remove('copied');
+                }, 2000);
+            });
+        }
+
+        async function deleteUrl(shortId) {
+            if (!confirm('Are you sure you want to delete this URL?')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/${shortId}`, {
+                    method: 'DELETE',
+                });
+
+                if (response.ok) {
+                    loadUserUrls();
+                    document.getElementById('successMessage').textContent = '✓ URL deleted successfully!';
+                    document.getElementById('successMessage').classList.add('show');
+                    setTimeout(() => {
+                        document.getElementById('successMessage').classList.remove('show');
+                    }, 3000);
+                } else {
+                    throw new Error('Failed to delete URL');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('errorMessage').textContent = '✗ Failed to delete URL';
+                document.getElementById('errorMessage').classList.add('show');
+            }
+        }
+
+        async function viewAnalytics(shortId) {
+            try {
+                const response = await fetch(`${API_BASE}/analytics/${shortId}`, {
+                    method: 'GET',
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    const datesVisited = data.analytics.map(visit => new Date(visit.timestamp).toLocaleString());
+                    alert(`📊 Analytics for ${shortId}\n\nTotal Clicks: ${data.totalClicks}\n\nLast 5 visits:\n${datesVisited.slice(-5).reverse().join('\n') || 'No visits yet'}`);
+                } else {
+                    throw new Error('Failed to load analytics');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error loading analytics');
+            }
+        }
+
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                window.location.href = '/logout';
+            }
+        }
+
+        // Load URLs on page load
+        window.addEventListener('load', loadUserUrls);
+    </script>
+</body>
+</html>
